@@ -24,6 +24,8 @@ public class PlayerMovement : MonoBehaviour
     public float SprintMult = 1;
     float SprintStrafeMult = 1;
 
+    public float yee;
+
     //Method Declarations
     IEnumerator SprintAccelerate()
     {
@@ -54,7 +56,16 @@ public class PlayerMovement : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
 
-        //When the button is released, return the multipliers to normal
+        //When the button is released, return the multipliers to normal slowly
+
+        int count = 50;
+        while (count > 0)
+        {
+            SprintMult -= 0.02f;
+            count--;
+            yield return new WaitForFixedUpdate();
+        }
+        
         SprintMult = 1;
         SprintStrafeMult = 1;
 
@@ -88,6 +99,9 @@ public class PlayerMovement : MonoBehaviour
                 StartCoroutine(SprintAccelerate());
             }
         }
+
+        //FOV changes based on speed
+        Camera.main.fieldOfView = 70 + (InputVector * Time.deltaTime * PlayerMoveSpeed).magnitude * yee;
 
         //Checks if the player is grounded
         if (Physics.BoxCast(transform.position, new Vector3(0.3f, 0.001f, 0.3f), -Vector3.up, out RaycastHit r2, Quaternion.identity, 1.51f, 3))

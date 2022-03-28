@@ -42,7 +42,6 @@ public class CameraController : MonoBehaviour
         else if (180 < angles.x && angles.x < 280)
         {
             angles.x = 280;
-            Debug.Log("yee");
         }
 
         FirstPersonCamera.transform.eulerAngles = angles;
@@ -52,5 +51,7 @@ public class CameraController : MonoBehaviour
         ThirdPersonCamera.transform.position = (transform.position + -FirstPersonCamera.transform.forward * 5);
         ThirdPersonCamera.transform.LookAt(transform.position);
         ThirdPersonCamera.transform.position += ThirdPersonCamera.transform.right * 1.8f;
+
+        //Mathf.Abs(gameObject.GetComponent<Rigidbody>().velocity.magnitude)
     }
 }
