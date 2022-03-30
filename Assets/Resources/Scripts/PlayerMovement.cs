@@ -105,13 +105,13 @@ public class PlayerMovement : MonoBehaviour
         CameraController.TimeFreeze();
         PostProcessingEffectsScript.CallEffect("TimeEffect", true);
         PlayerAudioSource.PlayOneShot(Resources.Load("Audio/Time Distort") as AudioClip);
-        Time.timeScale = 0.5f;
+        Time.timeScale = 0.25f;
         Time.fixedDeltaTime *= Time.timeScale;
         Physics.gravity = -Vector3.up * 15f;
 
         while (!Input.GetButtonUp("Za Warudo") && TimePercent > 0)
         {
-            TimePercent -= 75f * Time.deltaTime;
+            TimePercent -= 150f * Time.deltaTime;
             yield return new WaitForSecondsRealtime(0.000001f);
         }
 
