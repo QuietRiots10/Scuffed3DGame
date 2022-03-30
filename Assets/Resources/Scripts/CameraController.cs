@@ -9,13 +9,38 @@ public class CameraController : MonoBehaviour
     //Defines the Camera Object
     GameObject FirstPersonCamera;
     GameObject ThirdPersonCamera;
-
-    //Variable Declaractions
-    public float HSense;
-    public float VSense;
+    GameObject GameController;
     
+    //Variable Declaractions
+    float HSense;
+    float VSense;
+    
+    //Coroutines
+    public void TimeFreeze()
+    {
+        StartCoroutine(TimeEffect(true));
+    }
+    public void TimeUnfreeze()
+    {
+        StartCoroutine(TimeEffect(false));
+    }
+    //Parameter: identifies whether to play the animation forward to backward (true = forward, false = backward)
+    IEnumerator TimeEffect(bool direction)
+    {
+        //Forward animation (Freeze)
+        if (direction)
+        {
+            Debug.Log("Freeze");
+        }
+        //Reverse animation (Unfreeze)
+        else
+        {
+            Debug.Log("Unfreeze");
+        }
+        yield return null;
+    }
 
-    // Start
+    //Start
     void Start()
     {
         //Locks Cursor
@@ -23,11 +48,17 @@ public class CameraController : MonoBehaviour
         //Defines First Person Camera Object
         FirstPersonCamera = GameObject.Find("FirstPersonCamera");
         ThirdPersonCamera = GameObject.Find("ThirdPersonCamera");
+        //Defines GameController Object
+        GameController = GameObject.FindGameObjectWithTag("GameController");
     }
 
-    // Update is called once per frame
+    //Update
     void Update()
     {
+        //Get HSense and VSense
+        HSense = GameController.GetComponent<GameControllerScript>().GetHSense();
+        VSense = GameController.GetComponent<GameControllerScript>().GetVSense();
+
         //Camera Left+Right Rotation (Rotates player)
         transform.Rotate(Vector3.up * (1) * HSense * Input.GetAxis("Mouse X"));
 
@@ -46,12 +77,9 @@ public class CameraController : MonoBehaviour
 
         FirstPersonCamera.transform.eulerAngles = angles;
         
-        
         //Third Person Camera Up+Down Rotation
         ThirdPersonCamera.transform.position = (transform.position + -FirstPersonCamera.transform.forward * 5);
         ThirdPersonCamera.transform.LookAt(transform.position);
         ThirdPersonCamera.transform.position += ThirdPersonCamera.transform.right * 1.8f;
-
-        //Mathf.Abs(gameObject.GetComponent<Rigidbody>().velocity.magnitude)
     }
 }
