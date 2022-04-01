@@ -34,6 +34,7 @@ public class BulletScript : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         Debug.Log(collision.gameObject);
+        gameObject.GetComponent<MeshRenderer>().enabled = false;
     }
 
     private void OnCollisionExit(Collision collision)

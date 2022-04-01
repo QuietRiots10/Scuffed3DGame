@@ -11,39 +11,117 @@ public class GunScript : MonoBehaviour
     GameObject FirstPersonCamera;
 
     //Variables customized to each gun
+
+    //How far in front of the gun's transform to spawn the bullet
     public float BarrelOffset;
+    //How long until you can shoot again
+    public float FireCooldown;
+    //Type of gun
     public string GunType;
+    public int Ammo;
 
     //Prefabs for all the bullet types
-    GameObject PistolBulletPrefab;
+    GameObject DefaultBulletPrefab;
+
+    IEnumerator Shoot()
+    {
+        //Determine what type of bullet to spawn
+        if (GunType == "Pistol")
+        {
+            if (Ammo > 0)
+            {
+                //Instantiate the bullet
+                CreatedBullet = Instantiate(DefaultBulletPrefab);
+                CreatedBullet.name = "Pistol Bullet";
+
+                //Move the bullet to the barrel and face it in the correct direction
+                CreatedBullet.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
+                CreatedBullet.transform.LookAt(transform.position + FirstPersonCamera.transform.forward * (BarrelOffset + 0.1f));
+
+                //Set the fire cooldown, decrease ammo
+                Ammo--;
+                FireCooldown = 0.3f;
+                yield return null;
+            }
+            else
+            {
+                Debug.Log("Out of Ammo!");
+            }
+            
+        }
+        else if (GunType == "AutoRifle")
+        {
+            while(Input.GetButton("Shoot"))
+            {
+                if (Ammo > 0)
+                {
+                    //Instantiate the bullet
+                    CreatedBullet = Instantiate(DefaultBulletPrefab);
+                    CreatedBullet.name = "AutoRifle Bullet";
+
+                    //Move the bullet to the barrel and face it in the correct direction
+                    CreatedBullet.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
+                    CreatedBullet.transform.LookAt(transform.position + FirstPersonCamera.transform.forward * (BarrelOffset + 0.1f));
+
+                    //Decrease ammo
+                    Ammo--;
+
+                    //Wait for a bit to repeat and fire again
+                    yield return new WaitForSecondsRealtime(0.15f);
+                }
+                else
+                {
+                    Debug.Log("Out of Ammo!");
+                }
+                
+            }
+
+            //Set the fire cooldown
+            FireCooldown = 0.2f;
+            yield return null;
+            
+        }
+        else
+        {
+            CreatedBullet = null;
+            Debug.Log("Define a Gun type before you can shoot!");
+            yield return null;
+        }
+    }
 
     //Start
     void Start()
     {
         FirstPersonCamera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
-        PistolBulletPrefab = Resources.Load("Prefabs/PistolBulletPrefab") as GameObject;
+        DefaultBulletPrefab = Resources.Load("Prefabs/DefaultBulletPrefab") as GameObject;
     }
 
     //Update
     void Update()
     {
+        //Fire the gun
         if (Input.GetButtonDown("Shoot"))
         {
-            //Determine what type of bullet to spawn
-            if (GunType == "Pistol")
+            //Checks if firecooldown is too high to shoot
+            if (FireCooldown > 0)
             {
-                CreatedBullet = Instantiate(PistolBulletPrefab);
-                CreatedBullet.name = "Pistol Bullet";
+                Debug.Log("Gun is on fire cooldown");
             }
             else
             {
-                CreatedBullet = null;
-                Debug.Log("Define a Gun type before you can shoot!");
-            }
+                StartCoroutine(Shoot());
+            } 
+        }
+        
 
-            //Move the bullet to the barrel and face it in the correct direction
-            CreatedBullet.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
-            CreatedBullet.transform.LookAt(transform.position + FirstPersonCamera.transform.forward * (BarrelOffset + 0.1f));
+        //Decrement Fire Cooldown
+        if (FireCooldown > 0)
+        {
+            FireCooldown = FireCooldown - Time.deltaTime;
+            if (FireCooldown == 0)
+            {
+                FireCooldown = 0;
+            }
         }
     }
 }

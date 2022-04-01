@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 3749625145911436976}
   - component: {fileID: 7730405135716372344}
   - component: {fileID: -5426733923773854198}
-  m_Layer: 0
-  m_Name: PistolBulletPrefab
+  m_Layer: 7
+  m_Name: DefaultBulletPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -107,7 +107,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7730405135716372345}
-  m_Material: {fileID: 13400000, guid: 0d6670e4cfb9f9443bf5e4388d525215, type: 2}
+  m_Material: {fileID: 13400000, guid: c81c402a334ebb546b483258d2e1ffec, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.4321853
