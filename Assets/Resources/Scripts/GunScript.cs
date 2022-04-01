@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//THIS SCRIPT SPAWNS A BULLET WHEN YOU SHOOT
+//THIS SCRIPT SPAWNS A BULLET WHEN YOU SHOOT, CONTROLS AMMO AND FIRE RATE,
+//AND CONTROLS THROWING YOUR WEAPON
 
 public class GunScript : MonoBehaviour
 {
     //GameObjects
     GameObject CreatedBullet;
+    GameObject CreatedThrownWeapon;
     GameObject FirstPersonCamera;
 
     //Variables customized to each gun
@@ -20,7 +22,7 @@ public class GunScript : MonoBehaviour
     public string GunType;
     public int Ammo;
 
-    //Prefabs for all the bullet types
+    //Prefabs
     GameObject DefaultBulletPrefab;
 
     IEnumerator Shoot()
@@ -65,15 +67,14 @@ public class GunScript : MonoBehaviour
 
                     //Decrease ammo
                     Ammo--;
-
-                    //Wait for a bit to repeat and fire again
-                    yield return new WaitForSecondsRealtime(0.15f);
                 }
                 else
                 {
                     Debug.Log("Out of Ammo!");
                 }
-                
+
+                //Wait for a bit to repeat and fire again
+                yield return new WaitForSecondsRealtime(0.15f);
             }
 
             //Set the fire cooldown
@@ -89,10 +90,28 @@ public class GunScript : MonoBehaviour
         }
     }
 
+    void DropWeapon()
+    {
+        //Deactivate the gun in the inventory
+        gameObject.SetActive(false);
+
+        //Create the thrown weapon object
+        CreatedThrownWeapon = Instantiate(Resources.Load("Prefabs/Thrown" + GunType + "Prefab") as GameObject);
+        CreatedThrownWeapon.name = "Thrown " + GunType;
+
+        //Set transform and rotation of thrown weapon
+        CreatedThrownWeapon.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
+        CreatedThrownWeapon.transform.LookAt(transform.position + FirstPersonCamera.transform.forward * (BarrelOffset + 0.1f));
+
+        //Add the force to throw the weapon
+        CreatedThrownWeapon.GetComponent<Rigidbody>().AddForce(FirstPersonCamera.transform.forward * 20, ForceMode.VelocityChange);
+    }
+
     //Start
     void Start()
     {
         FirstPersonCamera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
+        //Bullet Prefabs
         DefaultBulletPrefab = Resources.Load("Prefabs/DefaultBulletPrefab") as GameObject;
     }
 
@@ -112,7 +131,6 @@ public class GunScript : MonoBehaviour
                 StartCoroutine(Shoot());
             } 
         }
-        
 
         //Decrement Fire Cooldown
         if (FireCooldown > 0)
@@ -122,6 +140,12 @@ public class GunScript : MonoBehaviour
             {
                 FireCooldown = 0;
             }
+        }
+
+        //Drop Weapom
+        if (Input.GetButtonDown("Interact"))
+        {
+            DropWeapon();
         }
     }
 }

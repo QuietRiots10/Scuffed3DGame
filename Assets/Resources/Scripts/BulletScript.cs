@@ -31,9 +31,10 @@ public class BulletScript : MonoBehaviour
         count--;
     }
 
+    //Determines what the bullet collided with
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.gameObject);
+        //Debug.Log("Bullet Hit: " + collision.gameObject.name);
         gameObject.GetComponent<MeshRenderer>().enabled = false;
     }
 
