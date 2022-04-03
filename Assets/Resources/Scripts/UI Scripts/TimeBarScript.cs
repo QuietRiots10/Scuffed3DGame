@@ -24,8 +24,8 @@ public class TimeBarScript : MonoBehaviour
     //Update
     void Update()
     {
-        float TimePercent = PlayerScript.GetTimePercent();
-        TimeBarSlider.value = PlayerScript.GetTimePercent();
+        float TimePercent = PlayerScript.TimePercent;
+        TimeBarSlider.value = TimePercent;
         
         if (TimePercent <= 20)
         {

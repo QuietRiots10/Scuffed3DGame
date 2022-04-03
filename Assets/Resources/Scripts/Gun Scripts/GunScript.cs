@@ -17,7 +17,7 @@ public class GunScript : MonoBehaviour
     //How far in front of the gun's transform to spawn the bullet
     public float BarrelOffset;
     //How long until you can shoot again
-    public float FireCooldown;
+    float FireCooldown;
     //Type of gun
     public string GunType;
     public int Ammo;
@@ -35,6 +35,8 @@ public class GunScript : MonoBehaviour
                 //Instantiate the bullet
                 CreatedBullet = Instantiate(DefaultBulletPrefab);
                 CreatedBullet.name = "Pistol Bullet";
+                //Set the layer to "Player Bullet"
+                CreatedBullet.layer = 7;
 
                 //Move the bullet to the barrel and face it in the correct direction
                 CreatedBullet.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
@@ -60,6 +62,8 @@ public class GunScript : MonoBehaviour
                     //Instantiate the bullet
                     CreatedBullet = Instantiate(DefaultBulletPrefab);
                     CreatedBullet.name = "AutoRifle Bullet";
+                    //Set the layer to "Player Bullet"
+                    CreatedBullet.layer = 7;
 
                     //Move the bullet to the barrel and face it in the correct direction
                     CreatedBullet.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
@@ -96,7 +100,7 @@ public class GunScript : MonoBehaviour
         gameObject.SetActive(false);
 
         //Create the thrown weapon object
-        CreatedThrownWeapon = Instantiate(Resources.Load("Prefabs/Thrown" + GunType + "Prefab") as GameObject);
+        CreatedThrownWeapon = Instantiate(Resources.Load("Prefabs/ItemPrefabs/Thrown" + GunType + "Prefab") as GameObject);
         CreatedThrownWeapon.name = "Thrown " + GunType;
 
         //Set transform and rotation of thrown weapon
@@ -112,7 +116,7 @@ public class GunScript : MonoBehaviour
     {
         FirstPersonCamera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
         //Bullet Prefabs
-        DefaultBulletPrefab = Resources.Load("Prefabs/DefaultBulletPrefab") as GameObject;
+        DefaultBulletPrefab = Resources.Load("Prefabs/BulletPrefabs/DefaultBulletPrefab") as GameObject;
     }
 
     //Update

@@ -17,14 +17,14 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   gradingMode:
-    overrideState: 0
+    overrideState: 1
     value: 1
   externalLut:
     overrideState: 0
     value: {fileID: 0}
     defaultState: 1
   tonemapper:
-    overrideState: 1
+    overrideState: 0
     value: 0
   toneCurveToeStrength:
     overrideState: 0
@@ -59,13 +59,13 @@ MonoBehaviour:
     value: 0
   colorFilter:
     overrideState: 1
-    value: {r: 1, g: 0.49019608, b: 0, a: 1}
+    value: {r: 1, g: 0.2867924, b: 0.2867924, a: 1}
   hueShift:
     overrideState: 0
     value: 0
   saturation:
-    overrideState: 1
-    value: -75
+    overrideState: 0
+    value: 0
   brightness:
     overrideState: 0
     value: 0

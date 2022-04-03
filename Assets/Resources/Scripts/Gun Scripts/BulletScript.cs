@@ -9,6 +9,7 @@ public class BulletScript : MonoBehaviour
     //Variables
     public float BulletVelocity;
     private int count = 200;
+    public float BulletDamage;
 
     //Objects
     Rigidbody BulletBody;
@@ -31,10 +32,19 @@ public class BulletScript : MonoBehaviour
         count--;
     }
 
-    //Determines what the bullet collided with
+    //Determines what the bullet collided with, damages the player if applicable
     private void OnCollisionEnter(Collision collision)
     {
-        //Debug.Log("Bullet Hit: " + collision.gameObject.name);
+        //Damage the player, if the collider hit belongs to the player
+        if(collision.gameObject.tag == "Player" && BulletDamage != 0)
+        {
+            collision.gameObject.SendMessageUpwards("TakeDamage", BulletDamage);
+        }
+        else if (BulletDamage == 0)
+        {
+            Debug.Log("Weird shit happened, BulletDamage isn't defined. Did you hit yourself with your own bullet??");
+        }
+
         gameObject.GetComponent<MeshRenderer>().enabled = false;
     }
 

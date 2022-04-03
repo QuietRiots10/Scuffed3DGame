@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     CameraController CameraController;
     //Defines Post Processing Script
     PostProcessingEffectsScript PostProcessingEffectsScript;
+    //Defines UI object
+    GameObject UIObject;
 
     //Stores the Player's inputs
     Vector3 InputVector = new Vector3(0, 0, 0);
@@ -32,6 +34,8 @@ public class PlayerMovement : MonoBehaviour
     bool Sprinting = false;
     //Whether the player is controlling time
     bool TimeStopped = false;
+    //Health as a percent (0-100)
+    public float Health = 100;
     //How long the player can stop time (0-100 percent)
     public float TimePercent = 100;
     //Speed Multipliers while sprinting
@@ -41,12 +45,45 @@ public class PlayerMovement : MonoBehaviour
     int BaseFOV;
 
     //Temp variables for testing
-    
 
-    //Coroutines Declarations
-    public float GetTimePercent()
+
+
+    //Methods and Coroutines
+    public void TakeDamage(float damageAmount)
     {
-        return TimePercent;
+        Health = Health - damageAmount;
+
+        //Die when health is at 0
+        if (Health <= 0)
+        {
+            CommitDie();
+        }
+        else
+        {
+            PostProcessingEffectsScript.StopCoroutine("DamageEffect");
+            PostProcessingEffectsScript.StartCoroutine("DamageEffect");
+        }
+    }
+
+    public void CommitDie()
+    {
+        //Disable normal UI, enable death screen UI
+        UIObject.transform.GetChild(0).gameObject.SetActive(false);
+        UIObject.transform.GetChild(1).gameObject.SetActive(true);
+
+        //Enable the vignette on the death screen
+        PostProcessingEffectsScript.StopCoroutine("DamageEffect");
+        PostProcessingEffectsScript.StartCoroutine("DeathEffect");
+
+        //Allows the player body to fall over and die
+        PlayerBody.constraints = RigidbodyConstraints.None;
+        PlayerBody.angularDrag = 0;
+        PlayerBody.AddTorque(transform.forward * -100);
+
+        //Disable the player script
+        GetComponent<PlayerMovement>().enabled = false;
+        //Disable the camera script
+        GetComponent<CameraController>().enabled = false;
     }
     IEnumerator SprintAccelerate()
     {
@@ -102,8 +139,7 @@ public class PlayerMovement : MonoBehaviour
     {
         //Time Stop
         TimeStopped = true;
-        CameraController.TimeFreeze();
-        PostProcessingEffectsScript.CallEffect("TimeEffect", true);
+        PostProcessingEffectsScript.StartCoroutine("TimeEffect", true);
         PlayerAudioSource.PlayOneShot(Resources.Load("Audio/Time Distort") as AudioClip);
         Time.timeScale = 0.25f;
         Time.fixedDeltaTime *= Time.timeScale;
@@ -120,8 +156,7 @@ public class PlayerMovement : MonoBehaviour
             TimePercent = 0f;
         }
         
-        CameraController.TimeUnfreeze();
-        PostProcessingEffectsScript.CallEffect("TimeEffect", false);
+        PostProcessingEffectsScript.StartCoroutine("TimeEffect", false);
         PlayerAudioSource.PlayOneShot(Resources.Load("Audio/Time Distort Reverse") as AudioClip);
         Time.timeScale = 1f;
         Time.fixedDeltaTime = 0.02f;
@@ -143,8 +178,10 @@ public class PlayerMovement : MonoBehaviour
         GameController = GameObject.FindGameObjectWithTag("GameController");
         //Locates Camera Controller Script
         CameraController = GetComponent<CameraController>();
-        //Locates Time Distorr Script
+        //Locates Time Distort Script
         PostProcessingEffectsScript = GameObject.Find("Post Processing").GetComponent<PostProcessingEffectsScript>();
+        //Locates UI Object
+        UIObject = GameObject.Find("UI");
     }
 
     void Update()

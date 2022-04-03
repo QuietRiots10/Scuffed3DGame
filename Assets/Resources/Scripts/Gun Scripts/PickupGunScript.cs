@@ -7,22 +7,20 @@ using UnityEngine;
 public class PickupGunScript : MonoBehaviour
 {
     //Objects
-    Rigidbody PlayerBody;
-    GameObject GunParent;
-    GameObject FirstPersonCamera;
-    SphereCollider PickupTriggerCollider;
+    public GameObject GunParent;
+    public GameObject FirstPersonCamera;
+    public SphereCollider PickupTriggerCollider;
 
     //Start
     void Start()
     {
-        PlayerBody = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody>();
         PickupTriggerCollider = gameObject.GetComponent<SphereCollider>();
         FirstPersonCamera = GameObject.FindGameObjectWithTag("MainCamera");
         GunParent = FirstPersonCamera.transform.GetChild(0).gameObject;
     }
 
-    //Update
-    void Update()
+    //LateUpdate, to facilitate swapping weapons (it gets dropped first, then picked up in LateUpdate)
+    void LateUpdate()
     {
         if (Input.GetButtonDown("Interact"))
         {
@@ -34,6 +32,7 @@ public class PickupGunScript : MonoBehaviour
                 Destroy(gameObject);
 
                 //Find the gun in the player's inventory and activate it (I.E. make the player hold it)
+                //Name MUST HAVE PICKUP AT THE BEGINNING AND PREFAB AT THE END, AND NO SPACES
                 GunParent.transform.Find(hit.collider.gameObject.name.Substring(6, name.Length - 12) + "Gun").gameObject.SetActive(true);
             }
         } 

@@ -14,31 +14,6 @@ public class CameraController : MonoBehaviour
     //Variable Declaractions
     float HSense;
     float VSense;
-    
-    //Coroutines
-    public void TimeFreeze()
-    {
-        StartCoroutine(TimeEffect(true));
-    }
-    public void TimeUnfreeze()
-    {
-        StartCoroutine(TimeEffect(false));
-    }
-    //Parameter: identifies whether to play the animation forward to backward (true = forward, false = backward)
-    IEnumerator TimeEffect(bool direction)
-    {
-        //Forward animation (Freeze)
-        if (direction)
-        {
-            Debug.Log("Freeze");
-        }
-        //Reverse animation (Unfreeze)
-        else
-        {
-            Debug.Log("Unfreeze");
-        }
-        yield return null;
-    }
 
     //Start
     void Start()

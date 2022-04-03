@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3749625145911436976}
   - component: {fileID: 7730405135716372344}
   - component: {fileID: -5426733923773854198}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: DefaultBulletPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
