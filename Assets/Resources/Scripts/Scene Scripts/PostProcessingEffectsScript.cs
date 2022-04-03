@@ -5,7 +5,12 @@ using UnityEngine.Rendering.PostProcessing;
 
 public class PostProcessingEffectsScript : MonoBehaviour
 {
+    //Volumes
     PostProcessVolume Volume;
+    PostProcessVolume Volume2;
+    PostProcessVolume Volume3;
+
+    //Effects
     LensDistortion Distortion;
     Vignette TimeVignette;
     Vignette DamageVignette;
@@ -44,8 +49,7 @@ public class PostProcessingEffectsScript : MonoBehaviour
         DeathColorGrade.enabled.Override(false);
         DeathColorGrade.colorFilter.Override(new Color(1f, 0.2867924f, 0.2867924f));
 
-        // Use QuickVolume to create a volume with a priority of 100, and assign the distortion and vignette to this volume
-        Volume = PostProcessManager.instance.QuickVolume(gameObject.layer, 100f, Distortion, TimeVignette, DamageVignette, DeathColorGrade);
+        
     }
     
     //Parameter: Forward - Tells you how to play the effect (true = forward, false = backwards)
@@ -56,13 +60,16 @@ public class PostProcessingEffectsScript : MonoBehaviour
         //Forward Distortion
         if (forward)
         {
+            //Use QuickVolume to create volumes
+            Volume2 = PostProcessManager.instance.QuickVolume(gameObject.layer, 98f, TimeVignette, Distortion);
+
             //Vingette enabled
             TimeVignette.enabled.Override(true);
             Distortion.enabled.Override(true);
 
             while (count > 0)
             {
-                // Change distortion intensity
+                //Change distortion intensity
                 TimeDistortIntensity = TimeDistortIntensity + 0.5f;
                 Distortion.intensity.Override(TimeDistortIntensity);
 
@@ -96,6 +103,7 @@ public class PostProcessingEffectsScript : MonoBehaviour
             //Vignette Disabled
             TimeVignette.enabled.Override(false);
             Distortion.enabled.Override(false);
+            RuntimeUtilities.DestroyVolume(Volume2, false);
         }
 
         yield return null;
@@ -103,6 +111,8 @@ public class PostProcessingEffectsScript : MonoBehaviour
 
     public IEnumerator DamageEffect()
     {
+        Volume = PostProcessManager.instance.QuickVolume(gameObject.layer, 99f, DamageVignette);
+
         DamageVignette.enabled.Override(true);
         
         int count = 0;
@@ -131,11 +141,15 @@ public class PostProcessingEffectsScript : MonoBehaviour
         }
 
         DamageVignette.enabled.Override(false);
+        RuntimeUtilities.DestroyVolume(Volume, false);
         yield return null;
     }
 
     public IEnumerator DeathEffect()
     {
+        //Use QuickVolume to create volumes
+        Volume = PostProcessManager.instance.QuickVolume(gameObject.layer, 99f, DamageVignette, DeathColorGrade);
+
         DamageVignette.enabled.Override(true);
         DeathColorGrade.enabled.Override(true);
 
@@ -152,8 +166,6 @@ public class PostProcessingEffectsScript : MonoBehaviour
             count++;
             yield return new WaitForSecondsRealtime(0.0001f);
         }
-
-        
         yield return null;
     }
 }
