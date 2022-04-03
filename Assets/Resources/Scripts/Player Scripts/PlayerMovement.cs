@@ -36,6 +36,8 @@ public class PlayerMovement : MonoBehaviour
     bool TimeStopped = false;
     //Health as a percent (0-100)
     public float Health = 100;
+    //Times how long until the player can start regenerating (in seconds)
+    public float HealthRegenTimer = 0;
     //How long the player can stop time (0-100 percent)
     public float TimePercent = 100;
     //Speed Multipliers while sprinting
@@ -47,11 +49,11 @@ public class PlayerMovement : MonoBehaviour
     //Temp variables for testing
 
 
-
     //Methods and Coroutines
     public void TakeDamage(float damageAmount)
     {
         Health = Health - damageAmount;
+        HealthRegenTimer = 3;
 
         //Die when health is at 0
         if (Health <= 0)
@@ -64,7 +66,6 @@ public class PlayerMovement : MonoBehaviour
             PostProcessingEffectsScript.StartCoroutine("DamageEffect");
         }
     }
-
     public void CommitDie()
     {
         //Disable normal UI, enable death screen UI
@@ -208,6 +209,19 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        //Regenerate health
+        if (HealthRegenTimer <= 0 && Health < 100)
+        {
+            //Regen health (in health/second)
+            Health += 25 * Time.deltaTime;
+            HealthRegenTimer = 0;
+        }
+        else if (HealthRegenTimer > 0)
+        {
+            //Increment timer
+            HealthRegenTimer -= Time.deltaTime;
+        }
+        
         //Regenerate Time Stop Power
         if (!TimeStopped)
         {
