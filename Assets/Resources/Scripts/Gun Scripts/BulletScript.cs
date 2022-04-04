@@ -40,7 +40,7 @@ public class BulletScript : MonoBehaviour
         {
             collision.gameObject.SendMessageUpwards("TakeDamage", BulletDamage);
         }
-        else if (BulletDamage == 0)
+        else if (collision.gameObject.tag == "Player" && BulletDamage == 0)
         {
             Debug.Log("Weird shit happened, BulletDamage isn't defined. Did you hit yourself with your own bullet??");
         }

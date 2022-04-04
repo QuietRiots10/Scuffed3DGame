@@ -36,6 +36,8 @@ public class PlayerMovement : MonoBehaviour
     bool TimeStopped = false;
     //Health as a percent (0-100)
     public float Health = 100;
+    //Whether the player is dead
+    public bool Dead = false;
     //Times how long until the player can start regenerating (in seconds)
     public float HealthRegenTimer = 0;
     //How long the player can stop time (0-100 percent)
@@ -68,23 +70,31 @@ public class PlayerMovement : MonoBehaviour
     }
     public void CommitDie()
     {
-        //Disable normal UI, enable death screen UI
-        UIObject.transform.GetChild(0).gameObject.SetActive(false);
-        UIObject.transform.GetChild(1).gameObject.SetActive(true);
+        if (!Dead)
+        {
+            Dead = true;
 
-        //Enable the vignette on the death screen
-        PostProcessingEffectsScript.StopCoroutine("DamageEffect");
-        PostProcessingEffectsScript.StartCoroutine("DeathEffect");
+            //Disable normal UI, enable death screen UI
+            UIObject.transform.GetChild(0).gameObject.SetActive(false);
+            UIObject.transform.GetChild(1).gameObject.SetActive(true);
 
-        //Allows the player body to fall over and die
-        PlayerBody.constraints = RigidbodyConstraints.None;
-        PlayerBody.angularDrag = 0;
-        PlayerBody.AddTorque(transform.forward * -100);
+            //Drop current weapon
+            BroadcastMessage("DropWeapon");
+            
+            //Enable the vignette on the death screen
+            PostProcessingEffectsScript.StopCoroutine("DamageEffect");
+            PostProcessingEffectsScript.StartCoroutine("DeathEffect");
 
-        //Disable the player script
-        GetComponent<PlayerMovement>().enabled = false;
-        //Disable the camera script
-        GetComponent<CameraController>().enabled = false;
+            //Allows the player body to fall over and die
+            PlayerBody.constraints = RigidbodyConstraints.None;
+            PlayerBody.angularDrag = 0;
+            PlayerBody.AddTorque(transform.forward * -100);
+
+            //Disable the player script
+            GetComponent<PlayerMovement>().enabled = false;
+            //Disable the camera script
+            GetComponent<CameraController>().enabled = false;
+        }
     }
     IEnumerator SprintAccelerate()
     {

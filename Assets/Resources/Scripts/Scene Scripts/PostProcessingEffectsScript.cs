@@ -5,13 +5,11 @@ using UnityEngine.Rendering.PostProcessing;
 
 public class PostProcessingEffectsScript : MonoBehaviour
 {
-    //Volumes
-    PostProcessVolume Volume;
-    PostProcessVolume Volume2;
-    PostProcessVolume Volume3;
+    //Post Process Volumes
+    PostProcessVolume Volume1;
 
     //Effects
-    LensDistortion Distortion;
+    LensDistortion TimeDistortion;
     Vignette TimeVignette;
     Vignette DamageVignette;
     ColorGrading DeathColorGrade;
@@ -25,12 +23,12 @@ public class PostProcessingEffectsScript : MonoBehaviour
     //Start
     void Start()
     {
-        // Create an instance of a distorition
-        Distortion = ScriptableObject.CreateInstance<LensDistortion>();
-        Distortion.enabled.Override(true);
-        Distortion.intensity.Override(TimeDistortIntensity);
-        Distortion.intensityX.Override(1);
-        Distortion.intensityY.Override(1);
+        // Create an instance of a distorition (Time distortion)
+        TimeDistortion = ScriptableObject.CreateInstance<LensDistortion>();
+        TimeDistortion.enabled.Override(false);
+        TimeDistortion.intensity.Override(TimeDistortIntensity);
+        TimeDistortion.intensityX.Override(1);
+        TimeDistortion.intensityY.Override(1);
 
         //Create an instance of a Vignette (Time Vignette)
         TimeVignette = ScriptableObject.CreateInstance<Vignette>();
@@ -55,55 +53,65 @@ public class PostProcessingEffectsScript : MonoBehaviour
     //Parameter: Forward - Tells you how to play the effect (true = forward, false = backwards)
     public IEnumerator TimeEffect(bool forward)
     {
-        int count = 120;
+        
+        float count = 0;
 
         //Forward Distortion
         if (forward)
         {
             //Use QuickVolume to create volumes
-            Volume2 = PostProcessManager.instance.QuickVolume(gameObject.layer, 98f, TimeVignette, Distortion);
+            Volume1 = PostProcessManager.instance.QuickVolume(gameObject.layer, 98f, TimeVignette , TimeDistortion);
 
             //Vingette enabled
             TimeVignette.enabled.Override(true);
-            Distortion.enabled.Override(true);
+            TimeDistortion.enabled.Override(true);
 
-            while (count > 0)
+            count = 0;
+            while (count < 0.25f)
             {
                 //Change distortion intensity
-                TimeDistortIntensity = TimeDistortIntensity + 0.5f;
-                Distortion.intensity.Override(TimeDistortIntensity);
+                TimeDistortIntensity = 240 * count;
+                TimeDistortion.intensity.Override(TimeDistortIntensity);
 
                 //Change Vignette Intensity
-                TimeVignetteIntensity = TimeVignetteIntensity + 0.003f;
+                TimeVignetteIntensity = 1.44f * count;
                 TimeVignette.intensity.Override(TimeVignetteIntensity);
 
-                count--;
-                yield return new WaitForSecondsRealtime(0.0001f);
+                count = count + 5 * Time.deltaTime;
+                yield return new WaitForSecondsRealtime(0.0000001f);
             }
         }
 
         //Reverse Distortion
         else if (!forward)
         {
+            count = 0.25f;
             while (count > 0)
             {
 
                 // Change distortion intensity
-                TimeDistortIntensity = TimeDistortIntensity - 0.5f; ;
-                Distortion.intensity.Override(TimeDistortIntensity);
+                TimeDistortIntensity = 240 * count;
+                TimeDistortion.intensity.Override(TimeDistortIntensity);
 
                 //Change Vignette Intensity
-                TimeVignetteIntensity = TimeVignetteIntensity - 0.003f;
+                TimeVignetteIntensity = 1.44f * count;
                 TimeVignette.intensity.Override(TimeVignetteIntensity);
 
-                count--;
-                yield return new WaitForSecondsRealtime(0.0001f);
+                count = count - Time.deltaTime;
+                yield return new WaitForSecondsRealtime(0.0000001f);
             }
 
             //Vignette Disabled
             TimeVignette.enabled.Override(false);
-            Distortion.enabled.Override(false);
-            RuntimeUtilities.DestroyVolume(Volume2, false);
+            TimeVignetteIntensity = 0;
+            TimeVignette.intensity.Override(0);
+            
+
+            //Distortion disabled
+            TimeDistortion.enabled.Override(false);
+            
+
+            //RuntimeUtilities.DestroyVolume(Volume1, true, false);
         }
 
         yield return null;
@@ -111,21 +119,21 @@ public class PostProcessingEffectsScript : MonoBehaviour
 
     public IEnumerator DamageEffect()
     {
-        Volume = PostProcessManager.instance.QuickVolume(gameObject.layer, 99f, DamageVignette);
+        PostProcessVolume Volume2 = PostProcessManager.instance.QuickVolume(gameObject.layer, 99f, DamageVignette);
 
         DamageVignette.enabled.Override(true);
         
-        int count = 0;
+        float count = 0;
         DamageVignetteIntensity = 0;
 
         //Increase intensity
-        while (count <= 60)
+        while (count <= 0.2)
         {
             //Change Vignette Intensity
-            DamageVignetteIntensity = DamageVignetteIntensity + 0.0062f;
+            DamageVignetteIntensity = 1.86f * count;
             DamageVignette.intensity.Override(DamageVignetteIntensity);
-            count++;
-            yield return new WaitForSecondsRealtime(0.0001f);
+            count = count + Time.deltaTime;
+            yield return new WaitForEndOfFrame();
         }
 
         yield return new WaitForSecondsRealtime(0.05f);
@@ -134,37 +142,37 @@ public class PostProcessingEffectsScript : MonoBehaviour
         while (count >= 0)
         {
             //Change Vignette Intensity
-            DamageVignetteIntensity = DamageVignetteIntensity - 0.0062f;
+            DamageVignetteIntensity = 1.86f * count ;
             DamageVignette.intensity.Override(DamageVignetteIntensity);
-            count--;
-            yield return new WaitForSecondsRealtime(0.0001f);
+            count = count - Time.deltaTime;
+            yield return new WaitForEndOfFrame();
         }
 
         DamageVignette.enabled.Override(false);
-        RuntimeUtilities.DestroyVolume(Volume, false);
+        //RuntimeUtilities.DestroyVolume(Volume2, true, false);
         yield return null;
     }
 
     public IEnumerator DeathEffect()
     {
         //Use QuickVolume to create volumes
-        Volume = PostProcessManager.instance.QuickVolume(gameObject.layer, 99f, DamageVignette, DeathColorGrade);
+        PostProcessVolume Volume3 = PostProcessManager.instance.QuickVolume(gameObject.layer, 99f, DamageVignette, DeathColorGrade);
 
         DamageVignette.enabled.Override(true);
         DeathColorGrade.enabled.Override(true);
 
-        int count = 0;
+        float count = 0;
         DamageVignetteIntensity = 0;
         DeathColorGrade.colorFilter.Override(new Color(1f, 0.2867924f, 0.2867924f));
 
         //Increase intensity of Vignette and change color of filter
-        while (count <= 40)
+        while (count <= 0.5f)
         {
             //Change Vignette Intensity
-            DamageVignetteIntensity = DamageVignetteIntensity + 0.015f;
+            DamageVignetteIntensity = 1.2f * count;
             DamageVignette.intensity.Override(DamageVignetteIntensity);
-            count++;
-            yield return new WaitForSecondsRealtime(0.0001f);
+            count = count + Time.deltaTime;
+            yield return new WaitForEndOfFrame();
         }
         yield return null;
     }
