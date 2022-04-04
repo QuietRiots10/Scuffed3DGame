@@ -30,6 +30,9 @@ public class MeleeEnemyBehaviorScript : MonoBehaviour
     public bool AtLastKnownPos;
     public bool ReturningToSpawnPos;
 
+    //HitMarker
+    HitMarkerScript HitMarkerScript;
+
     //Coroutines
 
     //DROP WEAPON IS BROKEN: NO SWORD ITEM YET
@@ -80,7 +83,24 @@ public class MeleeEnemyBehaviorScript : MonoBehaviour
             ReturningToSpawnPos = false;
             Debug.Log("Lost visual. Moving to last known position...");
             EnemyAgent.speed = 5;
-            EnemyAgent.SetDestination(LastKnownPos);
+
+            //Calculate whether the agent can reach the last known position
+            NavMeshPath path = new NavMeshPath();
+            EnemyAgent.CalculatePath(LastKnownPos, path);
+            
+            //If the agent can get to the last known position, then go
+            if (path.status == NavMeshPathStatus.PathComplete)
+            {
+                EnemyAgent.path = path;
+            }
+            //If not, then return to spawn
+            else if (path.status == NavMeshPathStatus.PathPartial)
+            {
+                Debug.Log("Nuts we can't get there. Returning to spawn...");
+                EnemyAgent.speed = 2;
+                ReturningToSpawnPos = true;
+                EnemyAgent.SetDestination(SpawnPos);
+            }
         }
 
         //When the agent reaches the last known position of the player without finding them
@@ -206,6 +226,7 @@ public class MeleeEnemyBehaviorScript : MonoBehaviour
         EnemyAgent = GetComponent<NavMeshAgent>();
         PlayerObject = GameObject.FindGameObjectsWithTag("Player")[0];
         PlayerScript = PlayerObject.GetComponent<PlayerMovement>();
+        HitMarkerScript = GameObject.Find("Hitmarker").GetComponent<HitMarkerScript>();
         SpawnPos = transform.position;
         SpawnRot = transform.eulerAngles;
         StartCoroutine("LookAround");
@@ -256,6 +277,8 @@ public class MeleeEnemyBehaviorScript : MonoBehaviour
             Destroy(gameObject);
             //DropWeapon();
             Debug.Log("Killed an enemy!");
+            HitMarkerScript.StartCoroutine("StartHitMarker");
+
         }
         else if (collision.gameObject.layer == 8)
         {

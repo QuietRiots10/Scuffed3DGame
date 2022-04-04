@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-
+//THIS SCRIPT VISUALIZES THE VIEWCONES OF ENEMIES IN THE SCENE VIEW
 
 [CustomEditor(typeof(MeleeEnemyBehaviorScript))]
 public class MeleeEnemyViewconeVisualizerScript : Editor

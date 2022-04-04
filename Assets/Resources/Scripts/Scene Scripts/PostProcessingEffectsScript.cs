@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
+//THIS SCRIPT CONTROLS THE APPLICATION AND USE OF POST PROCESSING EFFECTS FOR THE FIRST PERSON CAMERA
+
 public class PostProcessingEffectsScript : MonoBehaviour
 {
     //Post Process Volumes

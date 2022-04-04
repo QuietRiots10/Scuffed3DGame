@@ -21,6 +21,7 @@ public class GunScript : MonoBehaviour
     //Type of gun
     public string GunType;
     public int Ammo;
+    public int FullAmmo;
 
     //Prefabs
     GameObject DefaultBulletPrefab;
@@ -117,6 +118,12 @@ public class GunScript : MonoBehaviour
         FirstPersonCamera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
         //Bullet Prefabs
         DefaultBulletPrefab = Resources.Load("Prefabs/BulletPrefabs/DefaultBulletPrefab") as GameObject;
+    }
+
+    //Refills ammo when you pick up a new gun
+    private void OnEnable()
+    {
+        Ammo = FullAmmo; 
     }
 
     //Update
