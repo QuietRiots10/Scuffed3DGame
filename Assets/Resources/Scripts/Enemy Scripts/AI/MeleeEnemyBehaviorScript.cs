@@ -22,6 +22,7 @@ public class MeleeEnemyBehaviorScript : MonoBehaviour
     public float SightRange = 10;
     public float SightAngle = 90;
     public float AttackRange = 2;
+    public float Health = 100;
 
     //States
     public bool PlayerInSightRange;
@@ -82,7 +83,7 @@ public class MeleeEnemyBehaviorScript : MonoBehaviour
         {
             ReturningToSpawnPos = false;
             Debug.Log("Lost visual. Moving to last known position...");
-            EnemyAgent.speed = 5;
+            EnemyAgent.speed = 7;
 
             //Calculate whether the agent can reach the last known position
             NavMeshPath path = new NavMeshPath();
@@ -94,7 +95,7 @@ public class MeleeEnemyBehaviorScript : MonoBehaviour
                 EnemyAgent.path = path;
             }
             //If not, then return to spawn
-            else if (path.status == NavMeshPathStatus.PathPartial)
+            else if (path.status == NavMeshPathStatus.PathPartial || path.status == NavMeshPathStatus.PathInvalid)
             {
                 Debug.Log("Nuts we can't get there. Returning to spawn...");
                 EnemyAgent.speed = 2;
@@ -257,34 +258,45 @@ public class MeleeEnemyBehaviorScript : MonoBehaviour
         //Player is in Sight range but not attack range
         else if (PlayerInSightRange && !PlayerInAttackRange)
         {
-            EnemyAgent.speed = 7;
+            EnemyAgent.speed = 10;
             ChasePlayer();
         }
 
         //Player is in both attack and sight ranges
         else if (PlayerInSightRange && PlayerInAttackRange)
         {
-            EnemyAgent.speed = 5;
+            EnemyAgent.speed = 7;
             AttackPlayer();
         }
     }
 
-    //Detect Collisions with Player Bullets and die
+    //Detect Collisions with Player Bullets and take damage
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer == 7)
         {
-            Destroy(gameObject);
-            //DropWeapon();
-            Debug.Log("Killed an enemy!");
+            Health = Health - 40;
             HitMarkerScript.StartCoroutine("StartHitMarker");
 
+            //Check if health drops below 0
+            if (Health <= 0)
+            {
+                Debug.Log("Killed an enemy!");
+                //DropWeapon();
+                Destroy(gameObject);
+            }
         }
         else if (collision.gameObject.layer == 8)
         {
-            Destroy(gameObject);
-            //DropWeapon();
-            Debug.Log("Another enemy killed an enemy!");
+            Health = Health - 40;
+
+            //Check if health drops below 0
+            if (Health <= 0)
+            {
+                Debug.Log("Another Enemy killed an enemy!");
+                //DropWeapon();
+                Destroy(gameObject);
+            }
         }
     }
 }

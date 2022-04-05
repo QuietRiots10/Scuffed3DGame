@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//THIS SCRIPT CONTROLS THE MOVEMENTS OF THE PLAYER'S FIRST PERSON CAMERA
+//THIS SCRIPT CONTROLS THE MOVEMENTS OF THE PLAYER'S FIRST AND THIRD PERSON CAMERA
 
 public class CameraController : MonoBehaviour
 {

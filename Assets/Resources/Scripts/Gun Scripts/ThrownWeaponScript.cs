@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ThrownWeaponScript : MonoBehaviour
 {
-    int Despawncount = 1000;
+    float Despawncount = 5;
 
     //Fixed Update will despawn the weapon after a certain amount of time
     private void FixedUpdate()
@@ -17,7 +17,7 @@ public class ThrownWeaponScript : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        Despawncount--;
+        Despawncount = Despawncount - Time.deltaTime;
     }
 
     //Controls the destruction of the thrown weapon when it hits something

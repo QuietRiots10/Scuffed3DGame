@@ -32,7 +32,7 @@ public class EnemyGunScript : MonoBehaviour
             //Set the layer to "Enemy Bullet"
             CreatedBullet.layer = 8;
             //Set the bullet damage dealt to the player by this weapon
-            CreatedBullet.GetComponent<BulletScript>().BulletDamage = 20;
+            CreatedBullet.GetComponent<BulletScript>().BulletDamage = 15;
 
             //Move the bullet to the barrel and face it in the correct direction
             CreatedBullet.transform.position = transform.position + transform.forward * BarrelOffset;
@@ -51,7 +51,7 @@ public class EnemyGunScript : MonoBehaviour
             //Set the layer to "Enemy Bullet"
             CreatedBullet.layer = 8;
             //Set the bullet damage dealt to the player by this weapon
-            CreatedBullet.GetComponent<BulletScript>().BulletDamage = 8;
+            CreatedBullet.GetComponent<BulletScript>().BulletDamage = 5;
 
             //Move the bullet to the barrel and face it in the correct direction
             CreatedBullet.transform.position = transform.position + transform.forward * BarrelOffset;

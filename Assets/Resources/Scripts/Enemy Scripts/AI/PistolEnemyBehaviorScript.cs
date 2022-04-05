@@ -22,6 +22,7 @@ public class PistolEnemyBehaviorScript : MonoBehaviour
     public float SightRange = 10;
     public float SightAngle = 90;
     public float AttackRange = 2;
+    public float Health = 100;
 
     //States
     public bool PlayerInSightRange;
@@ -43,6 +44,7 @@ public class PistolEnemyBehaviorScript : MonoBehaviour
     {
         //Create the thrown weapon object
         CreatedPickupWeapon = Instantiate(Resources.Load("Prefabs/ItemPrefabs/PickupPistolPrefab") as GameObject);
+        CreatedPickupWeapon.SetActive(true);
         CreatedPickupWeapon.name = "PickupPistolPrefab";
 
         //Set transform and rotation of thrown weapon
@@ -96,7 +98,7 @@ public class PistolEnemyBehaviorScript : MonoBehaviour
                 EnemyAgent.path = path;
             }
             //If not, then return to spawn
-            else if (path.status == NavMeshPathStatus.PathPartial)
+            else if (path.status == NavMeshPathStatus.PathPartial || path.status == NavMeshPathStatus.PathInvalid)
             {
                 Debug.Log("Nuts we can't get there. Returning to spawn...");
                 EnemyAgent.speed = 2;
@@ -274,21 +276,33 @@ public class PistolEnemyBehaviorScript : MonoBehaviour
     }
 
     //Detect Collisions with Player Bullets and die
+    //Detect Collisions with Player Bullets and take damage
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer == 7)
         {
-            Destroy(gameObject);
-            DropWeapon();
-            Debug.Log("Player Killed an enemy!");
+            Health = Health - 40;
             HitMarkerScript.StartCoroutine("StartHitMarker");
-            
+
+            //Check if health drops below 0
+            if (Health <= 0)
+            {
+                Debug.Log("Killed an enemy!");
+                DropWeapon();
+                Destroy(gameObject);
+            }
         }
         else if (collision.gameObject.layer == 8)
         {
-            Destroy(gameObject);
-            DropWeapon();
-            Debug.Log("Another enemy killed an enemy!");
+            Health = Health - 40;
+
+            //Check if health drops below 0
+            if (Health <= 0)
+            {
+                Debug.Log("Another Enemy killed an enemy!");
+                DropWeapon();
+                Destroy(gameObject);
+            }
         }
     }
 }

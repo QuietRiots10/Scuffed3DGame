@@ -36,10 +36,10 @@ public class PlayerMovement : MonoBehaviour
     bool TimeStopped = false;
     //Health as a percent (0-100)
     public float Health = 100;
-    //Whether the player is dead
-    public bool Dead = false;
     //Times how long until the player can start regenerating (in seconds)
     public float HealthRegenTimer = 0;
+    //Whether the player is dead
+    public bool Dead = false;
     //How long the player can stop time (0-100 percent)
     public float TimePercent = 100;
     //Speed Multipliers while sprinting
@@ -55,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
     public void TakeDamage(float damageAmount)
     {
         Health = Health - damageAmount;
-        HealthRegenTimer = 3;
+        HealthRegenTimer = 2;
 
         //Die when health is at 0
         if (Health <= 0)
@@ -250,7 +250,7 @@ public class PlayerMovement : MonoBehaviour
         //FOV changes based on speed (Don't apply if time is stopped)
         if (!TimeStopped)
         {
-            Camera.main.fieldOfView = BaseFOV * (1 + Math.Abs(Input.GetAxis("ForwardMove") * SprintMult * PlayerMoveSpeed) * 0.01f);
+            Camera.main.fieldOfView = BaseFOV * (1 + Math.Abs(Input.GetAxis("ForwardMove") * SprintMult * PlayerMoveSpeed * 2) * 0.01f);
         }
     }
 

@@ -229,10 +229,11 @@ MonoBehaviour:
     m_Bits: 8
   ObstaclesMask:
     serializedVersion: 2
-    m_Bits: 631
+    m_Bits: 627
   SightRange: 20
-  SightAngle: 120
+  SightAngle: 360
   AttackRange: 2
+  Health: 100
   PlayerInSightRange: 0
   PlayerInAttackRange: 0
   AtSpawnPos: 0

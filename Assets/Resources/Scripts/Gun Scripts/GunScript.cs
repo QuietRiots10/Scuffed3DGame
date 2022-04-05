@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 //THIS SCRIPT SPAWNS A BULLET WHEN YOU SHOOT, CONTROLS AMMO AND FIRE RATE,
 //AND CONTROLS THROWING YOUR WEAPON
@@ -11,6 +12,8 @@ public class GunScript : MonoBehaviour
     GameObject CreatedBullet;
     GameObject CreatedThrownWeapon;
     GameObject FirstPersonCamera;
+    AudioSource PlayerAudioSource;
+    Text AmmoCounter;
 
     //Variables customized to each gun
 
@@ -41,16 +44,19 @@ public class GunScript : MonoBehaviour
 
                 //Move the bullet to the barrel and face it in the correct direction
                 CreatedBullet.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
-                CreatedBullet.transform.LookAt(transform.position + FirstPersonCamera.transform.forward * (BarrelOffset + 0.1f));
+                CreatedBullet.transform.LookAt(FirstPersonCamera.transform.position + FirstPersonCamera.transform.forward * (25f));
 
                 //Set the fire cooldown, decrease ammo
                 Ammo--;
+                PlayerAudioSource.PlayOneShot(Resources.Load("Audio/Gun Fire") as AudioClip);
+                AmmoCounter.text = "Ammo: " + Ammo;
                 FireCooldown = 0.3f;
                 yield return null;
             }
             else
             {
                 Debug.Log("Out of Ammo!");
+                PlayerAudioSource.PlayOneShot(Resources.Load("Audio/Gun Empty") as AudioClip);
             }
             
         }
@@ -68,14 +74,17 @@ public class GunScript : MonoBehaviour
 
                     //Move the bullet to the barrel and face it in the correct direction
                     CreatedBullet.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
-                    CreatedBullet.transform.LookAt(transform.position + FirstPersonCamera.transform.forward * (BarrelOffset + 0.1f));
+                    CreatedBullet.transform.LookAt(FirstPersonCamera.transform.position + FirstPersonCamera.transform.forward * (25f));
 
                     //Decrease ammo
                     Ammo--;
+                    PlayerAudioSource.PlayOneShot(Resources.Load("Audio/Gun Fire") as AudioClip);
+                    AmmoCounter.text = "Ammo: " + Ammo;
                 }
                 else
                 {
                     Debug.Log("Out of Ammo!");
+                    PlayerAudioSource.PlayOneShot(Resources.Load("Audio/Gun Empty") as AudioClip);
                 }
 
                 //Wait for a bit to repeat and fire again
@@ -99,6 +108,7 @@ public class GunScript : MonoBehaviour
     {
         //Deactivate the gun in the inventory
         gameObject.SetActive(false);
+        AmmoCounter.text = "Ammo: " + 0;
 
         //Create the thrown weapon object
         CreatedThrownWeapon = Instantiate(Resources.Load("Prefabs/ItemPrefabs/Thrown" + GunType + "Prefab") as GameObject);
@@ -115,7 +125,7 @@ public class GunScript : MonoBehaviour
     //Start
     void Start()
     {
-        FirstPersonCamera = GameObject.FindGameObjectsWithTag("MainCamera")[0];
+        FirstPersonCamera = GameObject.FindGameObjectWithTag("MainCamera");
         //Bullet Prefabs
         DefaultBulletPrefab = Resources.Load("Prefabs/BulletPrefabs/DefaultBulletPrefab") as GameObject;
     }
@@ -123,7 +133,12 @@ public class GunScript : MonoBehaviour
     //Refills ammo when you pick up a new gun
     private void OnEnable()
     {
-        Ammo = FullAmmo; 
+        AmmoCounter = GameObject.Find("AmmoCountDisplay").GetComponent<Text>();
+        Ammo = FullAmmo;
+        AmmoCounter.text = "Ammo: " + Ammo;
+
+        PlayerAudioSource = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioSource>();
+        PlayerAudioSource.PlayOneShot(Resources.Load("Audio/Gun Cock") as AudioClip);
     }
 
     //Update
