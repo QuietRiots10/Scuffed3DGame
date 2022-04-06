@@ -9,7 +9,6 @@ public class CameraController : MonoBehaviour
     //Defines the Camera Object
     GameObject FirstPersonCamera;
     GameObject ThirdPersonCamera;
-    GameObject GameController;
     
     //Variable Declaractions
     float HSense;
@@ -21,16 +20,14 @@ public class CameraController : MonoBehaviour
         //Defines First Person Camera Object
         FirstPersonCamera = GameObject.Find("FirstPersonCamera");
         ThirdPersonCamera = GameObject.Find("ThirdPersonCamera");
-        //Defines GameController Object
-        GameController = GameObject.FindGameObjectWithTag("GameController");
     }
 
     //Update
     void Update()
     {
         //Get HSense and VSense
-        HSense = GameController.GetComponent<GameControllerScript>().GetHSense();
-        VSense = GameController.GetComponent<GameControllerScript>().GetVSense();
+        HSense = GameControllerScript.GameController.HSense;
+        VSense = GameControllerScript.GameController.VSense;
 
         //Camera Left+Right Rotation (Rotates player)
         transform.Rotate(Vector3.up * (1) * HSense * Input.GetAxis("Mouse X"));

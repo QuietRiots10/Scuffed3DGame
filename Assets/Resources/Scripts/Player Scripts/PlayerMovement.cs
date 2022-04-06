@@ -14,8 +14,6 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody PlayerBody;
     //Defines Player Audio Source
     AudioSource PlayerAudioSource;
-    //Defines the GameController Object
-    GameObject GameController;
     //Defines Camera Controller Script
     CameraController CameraController;
     //Defines Post Processing Script
@@ -202,8 +200,6 @@ public class PlayerMovement : MonoBehaviour
         PlayerBody = transform.GetComponent<Rigidbody>();
         //Locates the Player Audio Source
         PlayerAudioSource = GetComponent<AudioSource>();
-        //Locates the GameController Object
-        GameController = GameObject.FindGameObjectWithTag("GameController");
         //Locates Camera Controller Script
         CameraController = GetComponent<CameraController>();
         //Locates Time Distort Script
@@ -215,7 +211,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         //Get Base FOV
-        BaseFOV = GameController.GetComponent<GameControllerScript>().GetBaseFOV();
+        BaseFOV = GameControllerScript.GameController.BaseFOV;
         
         //Za Warudo (Time Control)
         if (Input.GetButtonDown("Za Warudo") && !Dead)

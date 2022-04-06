@@ -13,6 +13,7 @@ public class PauseScript : MonoBehaviour
     GameObject PlayerObj;
     GameObject UIParent;
     Canvas DeathCanvas;
+    Canvas OptionsCanvas;
     PlayerMovement PlayerScript;
     PostProcessingEffectsScript EffectsScript;
 
@@ -48,8 +49,9 @@ public class PauseScript : MonoBehaviour
         Time.timeScale = 1f;
         Time.fixedDeltaTime = 0.02f;
 
-        //Disable the Pause menu canvas
+        //Disable all menu canvases
         gameObject.GetComponent<Canvas>().enabled = false;
+        UIParent.transform.GetChild(3).gameObject.GetComponent<Canvas>().enabled = false;
 
         //Reenable the death screen canvas if the player is dead
         if (PlayerObj.GetComponent<PlayerMovement>().Dead)
@@ -69,6 +71,11 @@ public class PauseScript : MonoBehaviour
                 script.enabled = true;
             }
         }
+    }
+    public void OptionsOpen()
+    {
+        gameObject.GetComponent<Canvas>().enabled = false;
+        OptionsCanvas.enabled = true;
     }
     public void Restart()
     {
@@ -101,6 +108,7 @@ public class PauseScript : MonoBehaviour
 
         UIParent = gameObject.transform.parent.gameObject;
         DeathCanvas = UIParent.transform.GetChild(2).gameObject.GetComponent<Canvas>();
+        OptionsCanvas = UIParent.transform.GetChild(3).gameObject.GetComponent<Canvas>();
     }
 
     //Update
