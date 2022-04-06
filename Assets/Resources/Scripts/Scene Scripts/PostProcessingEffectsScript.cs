@@ -9,6 +9,7 @@ public class PostProcessingEffectsScript : MonoBehaviour
 {
     //Post Process Volumes
     PostProcessVolume Volume1;
+    PostProcessVolume Volume3;
 
     //Effects
     LensDistortion TimeDistortion;
@@ -155,27 +156,41 @@ public class PostProcessingEffectsScript : MonoBehaviour
         yield return null;
     }
 
-    public IEnumerator DeathEffect()
+    public IEnumerator DeathEffect(bool activate)
     {
-        //Use QuickVolume to create volumes
-        PostProcessVolume Volume3 = PostProcessManager.instance.QuickVolume(gameObject.layer, 99f, DamageVignette, DeathColorGrade);
+        
 
-        DamageVignette.enabled.Override(true);
-        DeathColorGrade.enabled.Override(true);
-
-        float count = 0;
-        DamageVignetteIntensity = 0;
-        DeathColorGrade.colorFilter.Override(new Color(1f, 0.2867924f, 0.2867924f));
-
-        //Increase intensity of Vignette and change color of filter
-        while (count <= 0.5f)
+        if (activate)
         {
-            //Change Vignette Intensity
-            DamageVignetteIntensity = 1.2f * count;
-            DamageVignette.intensity.Override(DamageVignetteIntensity);
-            count = count + Time.deltaTime;
-            yield return new WaitForEndOfFrame();
+            //Use QuickVolume to create volumes
+            Volume3 = PostProcessManager.instance.QuickVolume(gameObject.layer, 99f, DamageVignette, DeathColorGrade);
+
+            DamageVignette.enabled.Override(true);
+            DeathColorGrade.enabled.Override(true);
+
+            float count = 0;
+            DamageVignetteIntensity = 0;
+            DeathColorGrade.colorFilter.Override(new Color(1f, 0.2867924f, 0.2867924f));
+
+            //Increase intensity of Vignette and change color of filter
+            while (count <= 0.5f)
+            {
+                //Change Vignette Intensity
+                DamageVignetteIntensity = 1.2f * count;
+                DamageVignette.intensity.Override(DamageVignetteIntensity);
+                count = count + Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+            yield return null;
         }
-        yield return null;
+
+        else if (!activate)
+        {
+            DamageVignette.enabled.Override(false);
+            DeathColorGrade.enabled.Override(false);
+        }
+        
+
+        
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 //THIS SCRIPT CONTROLS THE PLAYER'S MOVEMENT (RUN, JUMP, SPRINT, TIME STOP, FOV CHANGES)
 
@@ -22,6 +23,10 @@ public class PlayerMovement : MonoBehaviour
     //Defines UI object
     GameObject UIObject;
 
+    //Spawn position and rotation
+    Vector3 SpawnPos;
+    Quaternion SpawnRot;
+    
     //Stores the Player's inputs
     Vector3 InputVector = new Vector3(0, 0, 0);
     //How much to scale up the Input Vector (I.E. how fast the player will move)
@@ -58,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
         HealthRegenTimer = 2;
 
         //Die when health is at 0
-        if (Health <= 0)
+        if (Health <= 0 && !Dead)
         {
             CommitDie();
         }
@@ -75,26 +80,36 @@ public class PlayerMovement : MonoBehaviour
             Dead = true;
 
             //Disable normal UI, enable death screen UI
-            UIObject.transform.GetChild(0).gameObject.SetActive(false);
-            UIObject.transform.GetChild(1).gameObject.SetActive(true);
+            UIObject.transform.GetChild(0).gameObject.GetComponent<Canvas>().enabled = false;
+            UIObject.transform.GetChild(2).gameObject.GetComponent<Canvas>().enabled = true;
 
             //Drop current weapon
-            BroadcastMessage("DropWeapon");
+            BroadcastMessage("DropWeapon", SendMessageOptions.DontRequireReceiver);
             
             //Enable the vignette on the death screen
             PostProcessingEffectsScript.StopCoroutine("DamageEffect");
-            PostProcessingEffectsScript.StartCoroutine("DeathEffect");
+            PostProcessingEffectsScript.StartCoroutine("DeathEffect", true);
 
             //Allows the player body to fall over and die
             PlayerBody.constraints = RigidbodyConstraints.None;
             PlayerBody.angularDrag = 0;
             PlayerBody.AddTorque(transform.forward * -100);
 
-            //Disable the player script
-            GetComponent<PlayerMovement>().enabled = false;
             //Disable the camera script
             GetComponent<CameraController>().enabled = false;
         }
+    }
+    public void Respawn()
+    {
+        Dead = false;
+        Health = 100;
+
+        //Disable the death UI and re-enable the normal UI
+        UIObject.transform.GetChild(0).gameObject.GetComponent<Canvas>().enabled = true;
+        UIObject.transform.GetChild(2).gameObject.GetComponent<Canvas>().enabled = false;
+        PostProcessingEffectsScript.StartCoroutine("DeathEffect", false);
+
+        SceneManager.LoadScene(0);
     }
     IEnumerator SprintAccelerate()
     {
@@ -181,6 +196,8 @@ public class PlayerMovement : MonoBehaviour
     //Start
     void Start()
     {
+        SpawnPos = transform.position + Vector3.up;
+        SpawnRot = transform.rotation;
         //Locates the Player Rigidbody
         PlayerBody = transform.GetComponent<Rigidbody>();
         //Locates the Player Audio Source
@@ -201,7 +218,7 @@ public class PlayerMovement : MonoBehaviour
         BaseFOV = GameController.GetComponent<GameControllerScript>().GetBaseFOV();
         
         //Za Warudo (Time Control)
-        if (Input.GetButtonDown("Za Warudo"))
+        if (Input.GetButtonDown("Za Warudo") && !Dead)
         {
             if (!TimeStopped && TimePercent >= 20)
             {
@@ -210,7 +227,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Sprint
-        if (OnGround && Input.GetButtonDown("Sprint"))
+        if (OnGround && Input.GetButtonDown("Sprint") && !Dead)
         {
             //Check if the player is already sprinting (to prevent stacking acceleration)
             if (Sprinting == false)
@@ -230,6 +247,12 @@ public class PlayerMovement : MonoBehaviour
         {
             //Increment timer
             HealthRegenTimer -= Time.deltaTime;
+        }
+
+        //Respawn
+        if (Dead && Input.GetKeyDown(KeyCode.Space))
+        {
+            Respawn();
         }
         
         //Regenerate Time Stop Power
@@ -257,33 +280,36 @@ public class PlayerMovement : MonoBehaviour
     //FixedUpdate is used for Physics Updates (Player Movement)
     void FixedUpdate()
     {
-        //Update InputVector, Store Player Input as a unit vector of X and Z inputs
-        InputVector = transform.forward * Input.GetAxis("ForwardMove") * SprintMult + transform.right * (-1) * Input.GetAxis("HorizontalMove") * SprintStrafeMult;
-
-        //Move
-        PlayerBody.MovePosition(transform.position + InputVector * Time.deltaTime * PlayerMoveSpeed);
-
-        //Checks if the player is grounded
-        if (Physics.BoxCast(transform.position, new Vector3(0.3f, 0.001f, 0.3f), -Vector3.up, out RaycastHit r2, Quaternion.identity, 1.51f, 3))
+        if (!Dead)
         {
-            if (r2.collider.gameObject.tag == "Ground")
+            //Update InputVector, Store Player Input as a unit vector of X and Z inputs
+            InputVector = transform.forward * Input.GetAxis("ForwardMove") * SprintMult + transform.right * (-1) * Input.GetAxis("HorizontalMove") * SprintStrafeMult;
+
+            //Move
+            PlayerBody.MovePosition(transform.position + InputVector * Time.deltaTime * PlayerMoveSpeed);
+
+            //Checks if the player is grounded
+            if (Physics.BoxCast(transform.position, new Vector3(0.3f, 0.001f, 0.3f), -Vector3.up, out RaycastHit r2, Quaternion.identity, 1.51f, 3))
             {
-                OnGround = true;
+                if (r2.collider.gameObject.tag == "Ground")
+                {
+                    OnGround = true;
+                }
+                else
+                {
+                    OnGround = false;
+                }
             }
             else
             {
                 OnGround = false;
             }
-        }
-        else
-        {
-            OnGround = false;
-        }
 
-        //Jump
-        if (OnGround && PlayerBody.velocity.y <= 10)
-        {
-            PlayerBody.AddForce(Vector3.up * Input.GetAxis("Jump") * PlayerJumpHeight, ForceMode.Impulse);
-        }
+            //Jump
+            if (OnGround && PlayerBody.velocity.y <= 10)
+            {
+                PlayerBody.AddForce(Vector3.up * Input.GetAxis("Jump") * PlayerJumpHeight, ForceMode.Impulse);
+            }
+        } 
     }
 }

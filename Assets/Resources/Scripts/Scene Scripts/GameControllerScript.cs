@@ -26,6 +26,13 @@ public class GameControllerScript : MonoBehaviour
         return VSense;
     }
 
+    private void Start()
+    {
+        //Locks Cursor at middle of screen
+        
+        Cursor.lockState = CursorLockMode.Locked;
+
+    }
 
     //Update
     void Update()

@@ -18,8 +18,6 @@ public class CameraController : MonoBehaviour
     //Start
     void Start()
     {
-        //Locks Cursor
-        Cursor.lockState = CursorLockMode.Locked;
         //Defines First Person Camera Object
         FirstPersonCamera = GameObject.Find("FirstPersonCamera");
         ThirdPersonCamera = GameObject.Find("ThirdPersonCamera");
