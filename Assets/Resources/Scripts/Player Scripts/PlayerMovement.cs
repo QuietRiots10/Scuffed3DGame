@@ -194,6 +194,7 @@ public class PlayerMovement : MonoBehaviour
     //Start
     void Start()
     {
+
         SpawnPos = transform.position + Vector3.up;
         SpawnRot = transform.rotation;
         //Locates the Player Rigidbody
@@ -246,7 +247,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Respawn
-        if (Dead && Input.GetKeyDown(KeyCode.Space))
+        if ((Dead && Input.GetButtonDown("Jump")))
         {
             Respawn();
         }
@@ -306,6 +307,15 @@ public class PlayerMovement : MonoBehaviour
             {
                 PlayerBody.AddForce(Vector3.up * Input.GetAxis("Jump") * PlayerJumpHeight, ForceMode.Impulse);
             }
-        } 
+        }
+
+        //Checks if you are below the death barrier at y=-10 and dies
+        if (transform.position.y < -10)
+        {
+            Debug.Log("fell lol");
+            PlayerBody.useGravity = false;
+            PlayerBody.velocity = Vector3.zero;
+            CommitDie();
+        }
     }
 }
