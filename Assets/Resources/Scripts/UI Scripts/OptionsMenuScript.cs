@@ -11,7 +11,9 @@ public class OptionsMenuScript : MonoBehaviour
     GameObject UIObject;
     Canvas PauseMenuCanvas;
     Slider FOVSlider;
+    Text FOVSliderText;
     Slider MouseSenseSlider;
+    Text MouseSenseSliderText;
     Slider FPSSlider;
     Text FPSSliderText;
     
@@ -25,11 +27,13 @@ public class OptionsMenuScript : MonoBehaviour
     public void FOVChange()
     {
         GameControllerScript.GameController.BaseFOV = Mathf.RoundToInt(FOVSlider.value);
+        FOVSliderText.text = Mathf.RoundToInt(FOVSlider.value) + "";
     }
     public void SenseChange()
     {
         GameControllerScript.GameController.HSense = MouseSenseSlider.value;
         GameControllerScript.GameController.VSense = MouseSenseSlider.value;
+        MouseSenseSliderText.text = MouseSenseSlider.value + "";
     }
     public void TargetFPSChange()
     {
@@ -59,7 +63,9 @@ public class OptionsMenuScript : MonoBehaviour
 
         //Sliders
         FOVSlider = transform.GetChild(2).gameObject.GetComponent<Slider>();
+        FOVSliderText = transform.GetChild(2).GetChild(4).GetChild(0).gameObject.GetComponent<Text>();
         MouseSenseSlider = transform.GetChild(3).gameObject.GetComponent<Slider>();
+        MouseSenseSliderText = transform.GetChild(3).GetChild(4).GetChild(0).gameObject.GetComponent<Text>();
         FPSSlider = transform.GetChild(4).gameObject.GetComponent<Slider>();
         FPSSliderText = FPSSlider.transform.GetChild(4).GetChild(0).gameObject.GetComponent<Text>();
 
@@ -69,6 +75,8 @@ public class OptionsMenuScript : MonoBehaviour
         FPSSlider.value = GameControllerScript.GameController.TargetFrameRate;
 
         //Updates the value of the text label
+        FOVChange();
+        SenseChange();
         TargetFPSChange();
     }
 }

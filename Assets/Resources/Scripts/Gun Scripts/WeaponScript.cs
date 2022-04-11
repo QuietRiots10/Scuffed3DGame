@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.UI;
 
 //THIS SCRIPT SPAWNS A BULLET WHEN YOU SHOOT, CONTROLS AMMO AND FIRE RATE,
 //AND CONTROLS THROWING YOUR WEAPON
 
-public class GunScript : MonoBehaviour
+public class WeaponScript : MonoBehaviour
 {
     //GameObjects
     GameObject CreatedBullet;
@@ -14,6 +15,9 @@ public class GunScript : MonoBehaviour
     GameObject FirstPersonCamera;
     AudioSource PlayerAudioSource;
     Text AmmoCounter;
+
+    //Animation
+    Animator SwordAnimator;
 
     //Variables customized to each gun
 
@@ -96,6 +100,11 @@ public class GunScript : MonoBehaviour
             yield return null;
             
         }
+        else if (GunType == "Sword")
+        {
+            //Play Sword animation
+            SwordAnimator.Play("Swing");
+        }
         else
         {
             CreatedBullet = null;
@@ -110,16 +119,34 @@ public class GunScript : MonoBehaviour
         gameObject.SetActive(false);
         AmmoCounter.text = "Ammo: " + 0;
 
-        //Create the thrown weapon object
-        CreatedThrownWeapon = Instantiate(Resources.Load("Prefabs/ItemPrefabs/Thrown" + GunType + "Prefab") as GameObject);
-        CreatedThrownWeapon.name = "Thrown " + GunType;
+        
+        if (GunType == "Sword")
+        {
+            //Create the thrown weapon object
+            CreatedThrownWeapon = Instantiate(Resources.Load("Prefabs/ItemPrefabs/Pickup" + GunType + "Prefab") as GameObject);
+            CreatedThrownWeapon.name = "Pickup" + GunType + "Prefab";
 
-        //Set transform and rotation of thrown weapon
-        CreatedThrownWeapon.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
-        CreatedThrownWeapon.transform.LookAt(transform.position + FirstPersonCamera.transform.forward * (BarrelOffset + 0.1f));
+            //Set transform and rotation of thrown weapon
+            CreatedThrownWeapon.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
+            CreatedThrownWeapon.transform.LookAt(transform.position + FirstPersonCamera.transform.forward * (BarrelOffset + 0.1f));
 
-        //Add the force to throw the weapon
-        CreatedThrownWeapon.GetComponent<Rigidbody>().AddForce(FirstPersonCamera.transform.forward * 20, ForceMode.VelocityChange);
+            //Add the force to throw the weapon
+            CreatedThrownWeapon.GetComponent<Rigidbody>().AddForce(FirstPersonCamera.transform.forward * 50, ForceMode.VelocityChange);
+
+        }
+        else
+        {
+            //Create the thrown weapon object
+            CreatedThrownWeapon = Instantiate(Resources.Load("Prefabs/ItemPrefabs/Thrown" + GunType + "Prefab") as GameObject);
+            CreatedThrownWeapon.name = "Thrown " + GunType;
+
+            //Set transform and rotation of thrown weapon
+            CreatedThrownWeapon.transform.position = transform.position + FirstPersonCamera.transform.forward * BarrelOffset;
+            CreatedThrownWeapon.transform.LookAt(transform.position + FirstPersonCamera.transform.forward * (BarrelOffset + 0.1f));
+
+            //Add the force to throw the weapon
+            CreatedThrownWeapon.GetComponent<Rigidbody>().AddForce(FirstPersonCamera.transform.forward * 20, ForceMode.VelocityChange);
+        }
     }
 
     //Start
@@ -128,6 +155,7 @@ public class GunScript : MonoBehaviour
         FirstPersonCamera = GameObject.FindGameObjectWithTag("MainCamera");
         //Bullet Prefabs
         DefaultBulletPrefab = Resources.Load("Prefabs/BulletPrefabs/DefaultBulletPrefab") as GameObject;
+        SwordAnimator = transform.parent.gameObject.GetComponent<Animator>();
     }
 
     //Refills ammo when you pick up a new gun
@@ -161,7 +189,8 @@ public class GunScript : MonoBehaviour
         //Decrement Fire Cooldown
         if (FireCooldown > 0)
         {
-            FireCooldown = FireCooldown - Time.deltaTime;
+            FireCooldown = FireCooldown - (Time.deltaTime / Time.timeScale);
+            Debug.Log(Time.deltaTime);
             if (FireCooldown == 0)
             {
                 FireCooldown = 0;

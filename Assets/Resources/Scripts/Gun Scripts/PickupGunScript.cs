@@ -33,8 +33,16 @@ public class PickupGunScript : MonoBehaviour
 
                 //Find the gun in the player's inventory and activate it (I.E. make the player hold it)
                 //Name MUST HAVE PICKUP AT THE BEGINNING AND PREFAB AT THE END, AND NO SPACES
-                GunParent.transform.Find(hit.collider.gameObject.name.Substring(6, name.Length - 12) + "Gun").gameObject.SetActive(true);
-                //GunParent.transform.Find(hit.collider.gameObject.name.Substring(6, name.Length - 12) + "Gun").gameObject.GetComponent<GunScript>().Ammo = 
+                if (hit.collider.gameObject.name.Substring(6, name.Length - 12) == "Sword")
+                {
+                    //Set the sword active
+                    GunParent.transform.Find("SwordHandle").GetChild(0).gameObject.SetActive(true);
+                }
+                else
+                {
+                    GunParent.transform.Find(hit.collider.gameObject.name.Substring(6, name.Length - 12) + "Gun").gameObject.SetActive(true);
+
+                }
             }
         } 
     }

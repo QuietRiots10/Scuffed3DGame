@@ -18,6 +18,6 @@ public class FPSCounterScript : MonoBehaviour
     // Update is called once per frame
     void CountFPS()
     {
-        FPSCounter.text = "FPS: " + (int)(1 / Time.deltaTime);
+        FPSCounter.text = "FPS: " + (int)(Time.timeScale / Time.deltaTime);
     }
 }

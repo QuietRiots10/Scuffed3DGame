@@ -127,9 +127,10 @@ public class PlayerMovement : MonoBehaviour
             SprintMult = 2;
 
             //Sprint Strafe Mult changes whether you are in the air or not
+            //Strafe faster when time is stopped
             if (OnGround && TimeStopped == false)
             {
-                SprintStrafeMult = 1.5f;
+                SprintStrafeMult = 2.5f;
             }
             else if (TimeStopped == false)
             {
@@ -167,7 +168,7 @@ public class PlayerMovement : MonoBehaviour
         PlayerAudioSource.PlayOneShot(Resources.Load("Audio/Time Distort") as AudioClip);
         Time.timeScale = 0.25f;
         Time.fixedDeltaTime *= Time.timeScale;
-        Physics.gravity = -Vector3.up * 15f;
+        Physics.gravity = -Vector3.up * 20f;
 
         while (!Input.GetButtonUp("Za Warudo") && TimePercent > 0)
         {
@@ -237,7 +238,7 @@ public class PlayerMovement : MonoBehaviour
         if (HealthRegenTimer <= 0 && Health < 100)
         {
             //Regen health (in health/second)
-            Health += 25 * Time.deltaTime;
+            Health += 20 * Time.deltaTime;
             HealthRegenTimer = 0;
         }
         else if (HealthRegenTimer > 0)
